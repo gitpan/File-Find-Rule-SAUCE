@@ -30,7 +30,7 @@ use base qw( File::Find::Rule );
 use vars qw( @EXPORT $VERSION );
 
 @EXPORT  = @File::Find::Rule::EXPORT;
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use File::SAUCE;
 
@@ -122,7 +122,7 @@ sub File::Find::Rule::sauce {
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Brian Cassidy
+Copyright 2005 by Brian Cassidy
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

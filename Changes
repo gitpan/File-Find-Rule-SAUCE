@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Find::Rule::SAUCE.
 
+0.05  Wed Mar 02 2005
+	- added pod_coverage test
+
 0.04  Fri Sep 24 2004
 	- uses File::SAUCE 0.1 API
 	- code and pod cleanup
