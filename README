@@ -20,7 +20,7 @@ The module requires the following modules, available on CPAN:
 
   File::SAUCE
   File::Find::Rule
-
+  Test::More
 
 AUTHOR
 
