@@ -1,5 +1,10 @@
 Revision history for Perl extension File::Find::Rule::SAUCE.
 
+0.02  Sun Aug 10 2003
+	- fixed bug that wouldn't allow you to find files with no
+	  comments. (muse use File::SAUCE 0.03)
+	- it now skips directories
+
 0.01  Tue Mar 11 10:48:00 2003
 	- original version; created by h2xs 1.21 with options
 		-AX File::Find::Rule::SAUCE

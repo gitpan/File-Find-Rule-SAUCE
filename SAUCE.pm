@@ -6,7 +6,7 @@ use base qw( File::Find::Rule );
 use vars qw( @EXPORT $VERSION );
 
 @EXPORT  = @File::Find::Rule::EXPORT;
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use File::SAUCE;
 
@@ -14,31 +14,42 @@ sub File::Find::Rule::sauce {
 	my $self = shift()->_force_object;
 
 	# Procedural interface allows passing arguments as a hashref.
-	my %criteria = UNIVERSAL::isa($_[0], 'HASH') ? %{$_[0]} : @_;
+	my %criteria = UNIVERSAL::isa( $_[ 0 ], 'HASH' ) ? %{ $_[ 0 ] } : @_;
 
 	$self->exec( sub {
 		my $file = shift;
-		
-		my $info = File::SAUCE->new($file) or return;
 
-		for my $fld (keys %criteria) {
-			if ($fld eq 'comments') {
+		return if -d $file;
+
+		my $info = File::SAUCE->new( $file ) or return;
+
+		for my $fld ( keys %criteria ) {
+			if ( $fld eq 'comments' ) {
 
 				my $comments = $info->get_comments;
-				return unless $comments;
 
-				if (ref $criteria{$fld} eq 'Regexp') {
-					return unless grep($criteria{$fld}, @{$comments});
+				if ( ref $criteria{$fld} eq 'Regexp' ) {
+					if ( scalar @$comments > 0 ) {
+						return unless grep( $_ =~ $criteria{ $fld }, @{ $comments } );
+					}
+					else {
+						return unless '' =~ $criteria{ $fld };
+					}
 				}
 				else {
-					return unless grep($_ eq $criteria{$fld}, @{$comments});
+					if ( scalar @$comments > 0 ) {
+						return unless grep( $_ eq $criteria{ $fld }, @{ $comments } );
+					}
+					else {
+						return unless '' eq $criteria{ $fld };
+					}
 				}	
 			}
-			elsif (ref $criteria{$fld} eq 'Regexp') {
-				return unless $info->get(lc($fld)) =~ $criteria{$fld};
+			elsif ( ref $criteria{ $fld } eq 'Regexp' ) {
+				return unless $info->get( lc( $fld ) ) =~ $criteria{ $fld };
 			}
 			else {
-				return unless $info->get(lc($fld)) eq $criteria{$fld};
+				return unless $info->get( lc( $fld ) ) eq $criteria{ $fld };
 			}
 		}
 		return 1;

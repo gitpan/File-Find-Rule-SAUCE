@@ -4,6 +4,6 @@ WriteMakefile(
               'VERSION_FROM' => 'SAUCE.pm',
               'PREREQ_PM' => {
                               'File::Find::Rule' => 0,
-                              'File::SAUCE' => 0.02
+                              'File::SAUCE' => 0.03
                              },
                );
