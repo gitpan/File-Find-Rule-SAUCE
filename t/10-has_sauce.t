@@ -23,16 +23,8 @@ my @files;
 
 @files = find( sauce => { has_sauce => 0 }, in => $dir );
 @files = sort @files;
-ok( compare_arrays( \@files, \@expected_no ), 'has_sauce => 0' );
+is_deeply( \@files, \@expected_no, 'has_sauce => 0' );
 
 @files = find( sauce => { has_sauce => 1 }, in => $dir );
 @files = sort @files;
-ok( compare_arrays( \@files, \@expected_yes ), 'has_sauce => 1' );
-
-sub compare_arrays {
-	my ($first, $second) = @_;
-	return 0 if @$first != @$second;
-	my $i = 0;
-	$second->[$i++] ne $_ && return 0 for @$first;
-	return 1;
-}  
+is_deeply( \@files, \@expected_yes, 'has_sauce => 1' );

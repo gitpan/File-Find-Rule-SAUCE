@@ -1,78 +1,5 @@
 package File::Find::Rule::SAUCE;
 
-use strict;
-use File::Find::Rule;
-use base qw( File::Find::Rule );
-use vars qw( @EXPORT $VERSION );
-
-@EXPORT  = @File::Find::Rule::EXPORT;
-$VERSION = '0.03';
-
-use File::SAUCE;
-
-sub File::Find::Rule::sauce {
-	my $self = shift()->_force_object;
-
-	# Procedural interface allows passing arguments as a hashref.
-	my %criteria = UNIVERSAL::isa( $_[ 0 ], 'HASH' ) ? %{ $_[ 0 ] } : @_;
-
-	$self->exec( sub {
-		my $file = shift;
-
-		return if -d $file;
-
-		my $info = File::SAUCE->new( $file ) or return;
-
-		# deal with files (not) having SAUCE records first
-		if( exists $criteria{ has_sauce } ) {
-			return if $info->has_sauce ^ $criteria{ has_sauce };
-		}
-		else {
-			# if has_sauce was not specified, there's no point in continuing
-			# when the file has no SAUCE record
-			return unless $info->has_sauce;
-		}
-
-		# passed has_sauce - check the other criteria
-		for my $fld ( keys %criteria ) {
-			next if $fld =~ /^has_sauce$/;
-
-			if ( $fld eq 'comments' ) {
-
-				my $comments = $info->get_comments;
-
-				if ( ref $criteria{ $fld } eq 'Regexp' ) {
-					if ( scalar @$comments > 0 ) {
-						return unless grep( $_ =~ $criteria{ $fld }, @{ $comments } );
-					}
-					else {
-						return unless '' =~ $criteria{ $fld };
-					}
-				}
-				else {
-					if ( scalar @$comments > 0 ) {
-						return unless grep( $_ eq $criteria{ $fld }, @{ $comments } );
-					}
-					else {
-						return unless $criteria{ $fld } eq '';
-					}
-				}	
-			}
-			elsif ( ref $criteria{ $fld } eq 'Regexp' ) {
-				return unless $info->get( lc( $fld ) ) =~ $criteria{ $fld };
-			}
-			else {
-				return unless $info->get( lc( $fld ) ) eq $criteria{ $fld };
-			}
-		}
-		return 1;
-	} );
-}
-
-1;
-
-=pod
-
 =head1 NAME
 
 File::Find::Rule::SAUCE - Rule to match on title, author, etc from a file's SAUCE record
@@ -93,7 +20,23 @@ File::Find::Rule::SAUCE - Rule to match on title, author, etc from a file's SAUC
 This module will search through a file's SAUCE metadata (using File::SAUCE) and match on the
 specified fields.
 
+=cut
+
+use strict;
+use warnings;
+
+use File::Find::Rule;
+use base qw( File::Find::Rule );
+use vars qw( @EXPORT $VERSION );
+
+@EXPORT  = @File::Find::Rule::EXPORT;
+$VERSION = '0.04';
+
+use File::SAUCE;
+
 =head1 METHODS
+
+=head2 sauce( %options )
 
 	my @files = find( sauce => { title => qr/My Ansi/ }, in => '/ansi' );
 
@@ -107,25 +50,95 @@ has_sauce => 1 is implied if not specified.
 
 See File::SAUCE for a list of all the fields that can be matched.
 
-=head1 BUGS
+=cut
 
-If you have any questions, comments, bug reports or feature suggestions, 
-email them to Brian Cassidy <brian@alternation.net>.
+sub File::Find::Rule::sauce {
+	my $self = shift()->_force_object;
 
-=head1 CREDITS
+	# Procedural interface allows passing arguments as a hashref.
+	my %criteria = UNIVERSAL::isa( $_[ 0 ], 'HASH' ) ? %{ $_[ 0 ] } : @_;
 
-This module was written by Brian Cassidy (http://www.alternation.net/). It borrows heavily
-from File::Find::Rule::MP3Info.
+	$self->exec( sub {
+		my $file = shift;
 
-=head1 LICENSE
+		return if -d $file;
 
-This program is free software; you can redistribute it and/or modify it under the terms
-of the Artistic License, distributed with Perl.
+		my $info = File::SAUCE->new( file => $file );
+
+		# deal with files (not) having SAUCE records first
+		if( exists $criteria{ has_sauce } ) {
+			return 0 unless $info->has_sauce == $criteria{ has_sauce };
+		}
+		# if has_sauce was not specified, there's no point in continuing
+		# when the file has no SAUCE record
+		elsif( $info->has_sauce == 0 ) {
+			return 0;
+		}
+
+		# passed has_sauce - check the other criteria
+		for my $field ( keys %criteria ) {
+			$field = lc( $field );
+			next if $field eq 'has_sauce';
+
+			if ( $field eq 'comments' ) {
+
+				my $comments = $info->comments;
+
+				if ( ref $criteria{ $field } eq 'Regexp' ) {
+					if ( scalar @$comments > 0 ) {
+						return unless grep( $_ =~ $criteria{ $field }, @{ $comments } );
+					}
+					else {
+						return unless '' =~ $criteria{ $field };
+					}
+				}
+				else {
+					if ( scalar @$comments > 0 ) {
+						return unless grep( $_ eq $criteria{ $field }, @{ $comments } );
+					}
+					else {
+						return unless $criteria{ $field } eq '';
+					}
+				}	
+			}
+			elsif ( ref $criteria{ $field } eq 'Regexp' ) {
+				return unless $info->$field =~ $criteria{ $field };
+			}
+			else {
+				return unless $info->$field eq $criteria{ $field };
+			}
+		}
+		return 1;
+	} );
+}
+
+=head1 AUTHOR
+
+=over 4 
+
+=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2004 by Brian Cassidy
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =head1 SEE ALSO
 
-	File::SAUCE
-	File::Find::Rule
-	File::Find::Rule::MP3Info
+=over 4 
+
+=item * File::SAUCE
+
+=item * File::Find::Rule
+
+=item * File::Find::Rule::MP3Info
+
+=back
 
 =cut
+
+1;

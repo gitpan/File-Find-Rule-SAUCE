@@ -33,21 +33,13 @@ my %fields_4 = (
 my @files;
 
 @files = find( sauce => { %fields_1 }, in => $dir );
-ok( compare_arrays( \@files, \@expected ), "match one string" );
+is_deeply( \@files, \@expected, "match one string" );
 
 @files = find( sauce => { %fields_2 }, in => $dir );
-ok( compare_arrays( \@files, \@expected ), 'match one regex' );
+is_deeply( \@files, \@expected, 'match one regex' );
 
 @files = find( sauce => { %fields_3 }, in => $dir );
-ok( compare_arrays( \@files, \@expected ), "match multiple strings" );
+is_deeply( \@files, \@expected, "match multiple strings" );
 
 @files = find( sauce => { %fields_4 }, in => $dir );
-ok( compare_arrays( \@files, \@expected ), "match multiple regexes" );
-
-sub compare_arrays {
-	my ($first, $second) = @_;
-	return 0 if @$first != @$second;
-	my $i = 0;
-	$second->[$i++] ne $_ && return 0 for @$first;
-	return 1;
-}  
+is_deeply( \@files, \@expected, "match multiple regexes" );

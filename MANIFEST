@@ -12,3 +12,4 @@ t/data/bogus.dat
 t/data/bogus_long.dat
 t/data/test.dat
 t/data/test_no_comments.dat
+META.yml                                 Module meta-data (added by MakeMaker)
