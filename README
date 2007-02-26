@@ -1,35 +1,47 @@
-File::Find::Rule::SAUCE - Rule to match on title, author, etc from a file's SAUCE record
+NAME
+    File::Find::Rule::SAUCE - Rule to match on title, author, etc from a
+    file's SAUCE record
 
-This module will search through a file's SAUCE metadata (using File::SAUCE) and match on the
-specified fields.
+SYNOPSIS
+        use File::Find::Rule::SAUCE;
 
+        # get all files where 'Brian' is the author
+        my @files = find( sauce => { author => qr/Brian/ }, in => '/ansi' );
 
-INSTALLATION
+        # get all files without a SAUCE rec
+        @files    = find( sauce => { has_sauce => 0 }, in => '/ansi' );
 
-To install this module type the following:
+DESCRIPTION
+    This module will search through a file's SAUCE metadata (using
+    File::SAUCE) and match on the specified fields.
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+METHODS
+  sauce( %options )
+        my @files = find( sauce => { title => qr/My Ansi/ }, in => '/ansi' );
 
+    If more than one field is specified, it will only return the file if ALL
+    of the criteria are met. You can specify a regex (qr//) or just a
+    string.
 
-DEPENDENCIES
+    Matching on the comments field will search each line of comments for the
+    requested string.
 
-The module requires the following modules, available on CPAN:
+    has_sauce is a special field which should be matched against true or
+    false values (no regexes). has_sauce => 1 is implied if not specified.
 
-  File::SAUCE
-  File::Find::Rule
-  Test::More
+    See File::SAUCE for a list of all the fields that can be matched.
 
 AUTHOR
-
-Brian Cassidy <bricas@cpan.org>
-
+    * Brian Cassidy <bricas@cpan.org>
 
 COPYRIGHT AND LICENSE
+    Copyright 2007 by Brian Cassidy
 
-Copyright 2005 by Brian Cassidy
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+SEE ALSO
+    * File::SAUCE
+    * File::Find::Rule
+    * File::Find::Rule::MP3Info
+

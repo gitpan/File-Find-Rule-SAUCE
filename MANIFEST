@@ -1,7 +1,9 @@
+Build.PL
 Changes
 lib/File/Find/Rule/SAUCE.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
+META.yml
 README
 t/01-use.t
 t/10-has_sauce.t
@@ -13,4 +15,3 @@ t/data/bogus.dat
 t/data/bogus_long.dat
 t/data/test.dat
 t/data/test_no_comments.dat
-META.yml                                 Module meta-data (added by MakeMaker)
